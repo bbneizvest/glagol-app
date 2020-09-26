@@ -62,7 +62,7 @@ describe("page-query-row", () => {
     expect(spyQuery).toHaveBeenCalledTimes(0);
   });
 
-  test("technical error (invalid query, timeout, etc.)", async () => {
+  test("internal tech error", async () => {
     const errMsg = "Internal server error";
     spyQuery.mockRejectedValueOnce(new Error(errMsg));
 
