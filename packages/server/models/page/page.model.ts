@@ -9,7 +9,7 @@ export interface Row {
   data: PageData;
 }
 
-function isOidValid(oid: string): boolean {
+function isOidValidUuid(oid: string): boolean {
   const pattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/;
   if (!oid.match(pattern)) {
     return false;
@@ -24,7 +24,7 @@ export async function queryPage(oid: string): Promise<Page> {
       reject(new Error(`${QUERY_FAILED}. ${EMPTY_OID}`));
       return;
     }
-    if (!isOidValid(oid)) {
+    if (!isOidValidUuid(oid)) {
       reject(new Error(`${QUERY_FAILED}. ${INVALID_UUID(oid)}`));
       return;
     }
