@@ -1,0 +1,11 @@
+{
+  "extends": "@tsconfig/node12/tsconfig.json",
+
+  "compilerOptions": {
+    "preserveConstEnums": true,
+    "moduleResolution": "node",
+    "target": "ES2020"
+  },
+
+  "exclude": ["node_modules", "**/*.spec.ts"]
+}

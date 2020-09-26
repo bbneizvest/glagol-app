@@ -1,0 +1,16 @@
+{
+  "name": "glagol-app",
+  "version": "1.0.0",
+  "main": "packages/server/src/index.ts",
+  "private": "true",
+  "workspaces": [
+    "packages/*"
+  ],
+  "repository": {
+    "url": "https://github.com/bbneizvest/glagol-app"
+  },
+  "scripts": {
+    "server-dev": "yarn workspace @glagol-app/server dev",
+    "server-test": "yarn workspace @glagol-app/server test"
+  }
+}
