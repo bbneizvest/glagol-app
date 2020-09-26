@@ -26,8 +26,7 @@ describe("page-query-row", () => {
       },
       data: {
         header: "Maya Deren",
-        body:
-          "Maya Deren is one of the most influential figures in American avant-garde cinema",
+        body: "Influential figure in American avant-garde cinema",
       },
     };
 
@@ -94,8 +93,7 @@ function mockQueryResult(scenario: MockQueryScenario): QueryResult<Row> {
             updated_on: new Date(2014, 1, 11),
             data: {
               header: "Maya Deren",
-              body:
-                "Maya Deren is one of the most influential figures in American avant-garde cinema",
+              body: "Influential figure in American avant-garde cinema",
             },
           },
         ],
