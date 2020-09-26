@@ -1,0 +1,8 @@
+{
+  "name": "@glagol-app/schemas",
+  "version": "1.0.0",
+  "description": "JSON schemas for APIs",
+  "main": "index.js",
+  "author": "bbneizvest@protonmail.com",
+  "dependencies": {}
+}
