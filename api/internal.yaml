@@ -20,8 +20,9 @@ paths:
           example: 33361260-b811-4f9f-8c81-2ffab270d758
       responses:
         "200":
+          # Used for ALL successfull requests. If Page was not found, returns empty object
           description: OK
-          content: # Used for ALL successfull requests. If Page was not found, returns empty object
+          content:
             application/json:
               schema:
                 "$ref": "../packages/schemas/page.json#"
