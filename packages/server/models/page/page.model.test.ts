@@ -13,24 +13,22 @@ afterEach(() => {
 });
 
 describe("page-query-row", () => {
-  const validOid = "1ec6cf42-fa57-44f0-8bfc-feddf7cc19c4";
-
   test("success", async () => {
     spyQuery.mockResolvedValueOnce(mockQueryResult(MockQueryScenario.success));
 
     const outputPage: Page = {
       meta: {
-        oid: validOid,
-        createdOn: new Date(2014, 1, 11),
-        updatedOn: new Date(2014, 1, 11),
+        oid: oid,
+        createdOn: date,
+        updatedOn: date,
       },
       data: {
-        header: "Maya Deren",
-        body: "Influential figure in American avant-garde cinema",
+        header: header,
+        body: body,
       },
     };
 
-    const rs = await queryPage(validOid);
+    const rs = await queryPage(oid);
     expect(rs).toStrictEqual(outputPage);
     expect(spyQuery).toHaveBeenCalledTimes(1);
   });
@@ -38,8 +36,8 @@ describe("page-query-row", () => {
   test("row not found", async () => {
     spyQuery.mockResolvedValueOnce(mockQueryResult(MockQueryScenario.notFound));
 
-    await expect(queryPage(validOid)).rejects.toThrow(
-      `Querying Page failed. No results found for Page with id='${validOid}'`
+    await expect(queryPage(oid)).rejects.toThrow(
+      `Querying Page failed. No results found for Page with id='${oid}'`
     );
 
     expect(spyQuery).toHaveBeenCalledTimes(1);
@@ -65,7 +63,7 @@ describe("page-query-row", () => {
     const errMsg = "Internal server error";
     spyQuery.mockRejectedValueOnce(new Error(errMsg));
 
-    await expect(queryPage(validOid)).rejects.toThrow(
+    await expect(queryPage(oid)).rejects.toThrow(
       `Querying Page failed. Exception occured while accessing database.\nError: ${errMsg}`
     );
 
@@ -78,6 +76,10 @@ enum MockQueryScenario {
   notFound,
 }
 
+const oid = "1ec6cf42-fa57-44f0-8bfc-feddf7cc19c4";
+const date = new Date(2014, 1, 11);
+const header = "Maya Deren";
+const body = "Influential figure in American avant-garde cinema";
 function mockQueryResult(scenario: MockQueryScenario): QueryResult<Row> {
   switch (scenario) {
     case MockQueryScenario.success:
@@ -88,12 +90,12 @@ function mockQueryResult(scenario: MockQueryScenario): QueryResult<Row> {
         fields: [],
         rows: [
           {
-            oid: "1ec6cf42-fa57-44f0-8bfc-feddf7cc19c4",
-            created_on: new Date(2014, 1, 11),
-            updated_on: new Date(2014, 1, 11),
+            oid: oid,
+            created_on: date,
+            updated_on: date,
             data: {
-              header: "Maya Deren",
-              body: "Influential figure in American avant-garde cinema",
+              header: header,
+              body: body,
             },
           },
         ],
