@@ -1,7 +1,8 @@
 import pool from "../index";
 import { QueryResult } from "pg";
-import { Row, queryPage } from "./page.model";
+import PageModel, { Row } from "./page.model";
 import { Page } from "@glagol-app/types";
+import { errorTypes } from "@glagol-app/common";
 
 let spyQuery: jest.SpyInstance;
 
@@ -12,23 +13,23 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-describe("page-query-row", () => {
+describe("query-page-row", () => {
   test("success", async () => {
     spyQuery.mockResolvedValueOnce(mockQueryResult(MockQueryScenario.success));
 
     const outputPage: Page = {
       meta: {
-        oid: oid,
-        createdOn: date,
-        updatedOn: date,
+        oid: OID,
+        createdOn: DATE,
+        updatedOn: DATE,
       },
       data: {
-        header: header,
-        body: body,
+        header: HEADER,
+        body: BODY,
       },
     };
 
-    const rs = await queryPage(oid);
+    const rs = await PageModel.queryPage(OID);
     expect(rs).toStrictEqual(outputPage);
     expect(spyQuery).toHaveBeenCalledTimes(1);
   });
@@ -36,36 +37,57 @@ describe("page-query-row", () => {
   test("row not found", async () => {
     spyQuery.mockResolvedValueOnce(mockQueryResult(MockQueryScenario.notFound));
 
-    await expect(queryPage(oid)).rejects.toThrow(
-      `Querying Page failed. No results found for Page with id='${oid}'`
-    );
+    try {
+      await PageModel.queryPage(OID);
+    } catch (error) {
+      expect(error).toBeInstanceOf(errorTypes.DbQueryNoResultsError);
+      expect(error.message).toBe(
+        `No results returned from a query. Details: No results found for Page with oid='${OID}'`
+      );
+    }
 
     expect(spyQuery).toHaveBeenCalledTimes(1);
   });
 
   test("empty OID", async () => {
-    await expect(queryPage("")).rejects.toThrow(
-      `Querying Page failed. Expected valid UUID value, got empty value`
-    );
+    try {
+      await PageModel.queryPage("");
+    } catch (error) {
+      expect(error).toBeInstanceOf(errorTypes.InvalidParameterError);
+      expect(error.message).toBe(
+        "Invalid parameters were provided. Details: Expected valid UUID value, got empty value"
+      );
+    }
 
     expect(spyQuery).toHaveBeenCalledTimes(0);
   });
 
   test("invalid UUID value", async () => {
-    await expect(queryPage("123456789")).rejects.toThrow(
-      `Querying Page failed. Provided OID is not valid - expected valid UUID value, got '${123456789}'`
-    );
+    const INVALID_OID = "123456789";
+    try {
+      await PageModel.queryPage(INVALID_OID);
+    } catch (error) {
+      expect(error).toBeInstanceOf(errorTypes.InvalidParameterError);
+      expect(error.message).toBe(
+        `Invalid parameters were provided. Details: Provided OID is not valid - expected valid UUID value, got '${INVALID_OID}'`
+      );
+    }
 
     expect(spyQuery).toHaveBeenCalledTimes(0);
   });
 
   test("internal tech error", async () => {
-    const errMsg = "Internal server error";
-    spyQuery.mockRejectedValueOnce(new Error(errMsg));
+    const ERR_MSG = "Internal server error";
+    spyQuery.mockRejectedValueOnce(new Error(ERR_MSG));
 
-    await expect(queryPage(oid)).rejects.toThrow(
-      `Querying Page failed. Exception occured while accessing database.\nError: ${errMsg}`
-    );
+    try {
+      await PageModel.queryPage(OID);
+    } catch (error) {
+      expect(error).toBeInstanceOf(errorTypes.DbInternalError);
+      expect(error.message).toBe(
+        `Querying DB records failed. Details: ${ERR_MSG}`
+      );
+    }
 
     expect(spyQuery).toHaveBeenCalledTimes(1);
   });
@@ -76,10 +98,10 @@ enum MockQueryScenario {
   notFound,
 }
 
-const oid = "1ec6cf42-fa57-44f0-8bfc-feddf7cc19c4";
-const date = new Date(2014, 1, 11);
-const header = "Maya Deren";
-const body = "Influential figure in American avant-garde cinema";
+const OID = "1ec6cf42-fa57-44f0-8bfc-feddf7cc19c4";
+const DATE = new Date(2014, 1, 11);
+const HEADER = "Maya Deren";
+const BODY = "Influential figure in American avant-garde cinema";
 function mockQueryResult(scenario: MockQueryScenario): QueryResult<Row> {
   switch (scenario) {
     case MockQueryScenario.success:
@@ -90,12 +112,12 @@ function mockQueryResult(scenario: MockQueryScenario): QueryResult<Row> {
         fields: [],
         rows: [
           {
-            oid: oid,
-            created_on: date,
-            updated_on: date,
+            oid: OID,
+            created_on: DATE,
+            updated_on: DATE,
             data: {
-              header: header,
-              body: body,
+              header: HEADER,
+              body: BODY,
             },
           },
         ],

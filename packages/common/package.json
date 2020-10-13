@@ -1,0 +1,11 @@
+{
+  "name": "@glagol-app/common",
+  "version": "1.0.0",
+  "description": "common functions for glagol app",
+  "main": "index.ts",
+  "author": "bbneizvest@protonmail.com",
+  "dependencies": {
+    "typescript": "4.0.2",
+    "date-fns": "2.16.1"
+  }
+}

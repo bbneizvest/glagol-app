@@ -1,6 +1,7 @@
 import pool from "../index";
-import { Page, PageData } from "@glagol-app/types";
 import { QueryResult } from "pg";
+import { Page, PageData } from "@glagol-app/types";
+import { isOidValidUuid, errorTypes } from "@glagol-app/common";
 
 export interface Row {
   oid: string;
@@ -9,23 +10,23 @@ export interface Row {
   data: PageData;
 }
 
-function isOidValidUuid(oid: string): boolean {
-  const pattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/;
-  if (!oid.match(pattern)) {
-    return false;
-  }
-  return true;
-}
-
-export async function queryPage(oid: string): Promise<Page> {
+async function queryPage(oid: string): Promise<Page> {
   return new Promise<Page>((resolve, reject) => {
     // Validating incoming parameter
     if (oid == "") {
-      reject(new Error(`${QUERY_FAILED}. ${EMPTY_OID}`));
+      reject(
+        new errorTypes.InvalidParameterError(
+          "Expected valid UUID value, got empty value"
+        )
+      );
       return;
     }
     if (!isOidValidUuid(oid)) {
-      reject(new Error(`${QUERY_FAILED}. ${INVALID_UUID(oid)}`));
+      reject(
+        new errorTypes.InvalidParameterError(
+          `Provided OID is not valid - expected valid UUID value, got '${oid}'`
+        )
+      );
       return;
     }
 
@@ -34,7 +35,11 @@ export async function queryPage(oid: string): Promise<Page> {
       .then((rs: QueryResult<Row>) => {
         // No results
         if (rs.rowCount == 0) {
-          reject(new Error(`${QUERY_FAILED}. ${NO_RESULTS(oid)}`));
+          reject(
+            new errorTypes.DbQueryNoResultsError(
+              `No results found for Page with oid='${oid}'`
+            )
+          );
           return;
         }
 
@@ -50,19 +55,10 @@ export async function queryPage(oid: string): Promise<Page> {
 
         resolve(page);
       })
-      .catch((e: Error) =>
-        reject(
-          new Error(
-            `${QUERY_FAILED}. Exception occured while accessing database.\n${e}`
-          )
-        )
-      );
+      .catch((e: Error) => reject(new errorTypes.DbInternalError(e.message)));
   });
 }
 
-const QUERY_FAILED = "Querying Page failed";
-const NO_RESULTS = (oid: string) =>
-  `No results found for Page with id='${oid}'`;
-const EMPTY_OID = "Expected valid UUID value, got empty value";
-const INVALID_UUID = (oid: string) =>
-  `Provided OID is not valid - expected valid UUID value, got '${oid}'`;
+export default {
+  queryPage,
+};

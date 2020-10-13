@@ -20,13 +20,13 @@ paths:
           example: 33361260-b811-4f9f-8c81-2ffab270d758
       responses:
         "200":
-          # Used for ALL successfull requests. If Page was not found, returns empty object
+          # Used for all successfull requests. If Page was not found, returns empty JSON
           description: OK
           content:
             application/json:
               schema:
                 "$ref": "../packages/schemas/page.json#"
         "400":
-          description: OID was not provided or it is not valid
+          description: OID was not provided or it is not a valid UUID value
         "500":
           description: Internal server error
