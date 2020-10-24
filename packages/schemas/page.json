@@ -17,20 +17,6 @@
       },
       "additionalProperties": false
     },
-    "data": {
-      "type": "object",
-      "required": ["header", "body"],
-      "additionalProperties": false,
-      "properties": {
-        "header": {
-          "type": "string",
-          "additionalProperties": false
-        },
-        "body": {
-          "type": "string",
-          "additionalProperties": false
-        }
-      }
-    }
+    "data": { "$ref": "page.data.json#" }
   }
 }

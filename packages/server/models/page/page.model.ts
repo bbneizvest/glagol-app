@@ -1,7 +1,7 @@
 import pool from "../index";
 import { QueryResult } from "pg";
 import { Page, PageData } from "@glagol-app/types";
-import { isOidValidUuid, errorTypes } from "@glagol-app/common";
+import { isValidUuid, errorTypes } from "@glagol-app/common";
 
 export interface Row {
   oid: string;
@@ -10,6 +10,7 @@ export interface Row {
   data: PageData;
 }
 
+// TODO move query statement to string with parameters
 async function queryPage(oid: string): Promise<Page> {
   return new Promise<Page>((resolve, reject) => {
     // Validating incoming parameter
@@ -21,7 +22,7 @@ async function queryPage(oid: string): Promise<Page> {
       );
       return;
     }
-    if (!isOidValidUuid(oid)) {
+    if (!isValidUuid(oid)) {
       reject(
         new errorTypes.InvalidParameterError(
           `Provided OID is not valid - expected valid UUID value, got '${oid}'`
@@ -59,6 +60,28 @@ async function queryPage(oid: string): Promise<Page> {
   });
 }
 
+const INSERT_PAGE = "INSERT INTO objects.pages(data) VALUES ($1) RETURNING *";
+async function insertPage(pageData: PageData): Promise<Page> {
+  return new Promise<Page>((resolve, reject) => {
+    pool
+      .query(INSERT_PAGE, [JSON.stringify(pageData)])
+      .then((rs: QueryResult<Row>) => {
+        const page: Page = {
+          meta: {
+            oid: rs.rows[0].oid,
+            createdOn: rs.rows[0].created_on,
+            updatedOn: rs.rows[0].updated_on,
+          },
+          data: rs.rows[0].data,
+        };
+
+        resolve(page);
+      })
+      .catch((e: Error) => reject(new errorTypes.DbInternalError(e.message)));
+  });
+}
+
 export default {
   queryPage,
+  insertPage,
 };

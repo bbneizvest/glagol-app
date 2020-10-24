@@ -77,7 +77,6 @@ describe("query-page-row", () => {
   });
 
   test("internal tech error", async () => {
-    const ERR_MSG = "Internal server error";
     spyQuery.mockRejectedValueOnce(new Error(ERR_MSG));
 
     try {
@@ -93,15 +92,63 @@ describe("query-page-row", () => {
   });
 });
 
+describe("insert-page", () => {
+  test("success", async () => {
+    spyQuery.mockResolvedValueOnce(mockInsertResult);
+
+    const outputPage: Page = {
+      meta: {
+        oid: OID,
+        createdOn: DATE,
+        updatedOn: DATE,
+      },
+      data: {
+        header: HEADER,
+        body: BODY,
+      },
+    };
+
+    const rs = await PageModel.insertPage({
+      header: HEADER,
+      body: BODY,
+    });
+
+    expect(rs).toStrictEqual(outputPage);
+    expect(spyQuery).toHaveBeenCalledTimes(1);
+  });
+
+  test("internal tech error", async () => {
+    spyQuery.mockRejectedValueOnce(new Error(ERR_MSG));
+
+    try {
+      await PageModel.insertPage({
+        header: HEADER,
+        body: BODY,
+      });
+    } catch (error) {
+      expect(error).toBeInstanceOf(errorTypes.DbInternalError);
+      expect(error.message).toBe(
+        `Querying DB records failed. Details: ${ERR_MSG}`
+      );
+    }
+
+    expect(spyQuery).toHaveBeenCalledTimes(1);
+  });
+});
+
+// TODO describe("update-page");
+
 enum MockQueryScenario {
   success,
   notFound,
 }
 
+const ERR_MSG = "Internal DB error";
 const OID = "1ec6cf42-fa57-44f0-8bfc-feddf7cc19c4";
 const DATE = new Date(2014, 1, 11);
 const HEADER = "Maya Deren";
 const BODY = "Influential figure in American avant-garde cinema";
+
 function mockQueryResult(scenario: MockQueryScenario): QueryResult<Row> {
   switch (scenario) {
     case MockQueryScenario.success:
@@ -132,3 +179,21 @@ function mockQueryResult(scenario: MockQueryScenario): QueryResult<Row> {
       };
   }
 }
+
+const mockInsertResult = {
+  command: "SELECT",
+  rowCount: 1,
+  oid: (null as unknown) as number,
+  fields: [],
+  rows: [
+    {
+      oid: OID,
+      created_on: DATE,
+      updated_on: DATE,
+      data: {
+        header: HEADER,
+        body: BODY,
+      },
+    },
+  ],
+};

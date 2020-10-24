@@ -1,11 +1,11 @@
-import { isOidValidUuid, errorTypes } from "@glagol-app/common";
+import { isValidUuid, errorTypes } from "@glagol-app/common";
 import { Request, Response } from "express";
 import PageModel from "../models/page/page.model";
 
 export async function handleGetByOid(rq: Request, rs: Response) {
   const oid: string = rq.query.oid as string;
 
-  if (!isOidValidUuid(oid)) {
+  if (!isValidUuid(oid)) {
     rs.status(400).send("OID was not provided or it is not a valid UUID value");
     return;
   }

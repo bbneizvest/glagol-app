@@ -9,3 +9,7 @@ export interface Page {
   meta: RecordMeta;
   data: PageData;
 }
+
+// export function isPage(obj: any): obj is Page {
+//   return true;
+// }

@@ -30,3 +30,21 @@ paths:
           description: OID was not provided or it is not a valid UUID value
         "500":
           description: Internal server error
+    post:
+      description: Save new Page record
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "../packages/schemas/page.data.json#"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                "$ref": "../packages/schemas/page.json#"
+        "400":
+          description: Provided JSON message is invalid
+        "500":
+          description: Internal server error
