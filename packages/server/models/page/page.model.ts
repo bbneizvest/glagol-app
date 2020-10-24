@@ -1,7 +1,7 @@
-import pool from "../index";
 import { QueryResult } from "pg";
 import { Page, PageData } from "@glagol-app/types";
 import { isValidUuid, errorTypes } from "@glagol-app/common";
+import pool from "../index";
 
 export interface Row {
   oid: string;
@@ -10,7 +10,8 @@ export interface Row {
   data: PageData;
 }
 
-// TODO move query statement to string with parameters
+const SELECT_PAGE =
+  "SELECT oid, created_on, updated_on, data FROM objects.pages WHERE oid=$1";
 async function queryPage(oid: string): Promise<Page> {
   return new Promise<Page>((resolve, reject) => {
     // Validating incoming parameter
@@ -32,7 +33,7 @@ async function queryPage(oid: string): Promise<Page> {
     }
 
     pool
-      .query(`SELECT * FROM objects.pages WHERE oid='${oid}'`)
+      .query(SELECT_PAGE, [oid])
       .then((rs: QueryResult<Row>) => {
         // No results
         if (rs.rowCount == 0) {

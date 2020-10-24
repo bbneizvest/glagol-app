@@ -1,8 +1,8 @@
-import { Page } from "@glagol-app/types";
-import PageModel from "../models/page/page.model";
 import { Request, Response } from "express";
-import { handleGetByOid } from "./page.controller";
+import { Page } from "@glagol-app/types";
 import errorTypes from "@glagol-app/common/error.types";
+import { handleGetByOid } from "./page.controller";
+import PageModel from "../models/page/page.model";
 
 const OID = "1ec6cf42-fa57-44f0-8bfc-feddf7cc19c4";
 const OID_INVALID = "invalidOid";
