@@ -1,3 +1,3 @@
-import { Page, PageData } from "./page/page.type";
+import { Page, PageData, isPage, isPageData } from "./page/page.type";
 
-export { Page, PageData };
+export { Page, PageData, isPage, isPageData };
