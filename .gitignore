@@ -12,3 +12,7 @@ build/
 
 # Temp
 temp/
+
+# REST testing
+**/*.http
+**/*.rest
